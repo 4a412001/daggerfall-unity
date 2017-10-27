@@ -91,7 +91,7 @@ namespace DaggerfallWorkshop.Game
 
                 // Ray origin is slightly below camera height to ensure it originates inside player's own collider
                 // This prevents ray from intersecting with player's own collider and blocking looting or low triggers
-                Ray ray = new Ray(transform.position + Vector3.up * 0.7f, mainCamera.transform.forward);
+                Ray ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 RaycastHit hit;
                 RayDistance = 75f; // Approximates classic at full view distance (default setting). Classic seems to do raycasts for as far as it can render objects.
                 bool hitSomething = Physics.Raycast(ray, out hit, RayDistance);
