@@ -174,7 +174,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         Camera cameraAutomap = null; // camera for automap camera
 
-        GameObject gameObjectPlayerAdvanced = null; // used to hold reference to instance of GameObject "PlayerAdvanced"
+        //GameObject gameObjectPlayerAdvanced = null; // used to hold reference to instance of GameObject "PlayerAdvanced"
 
         public enum AutomapViewMode { View2D = 0, View3D = 1};
         AutomapViewMode automapViewMode = AutomapViewMode.View2D;
@@ -542,13 +542,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 // focus player in 2D view mode - but keep old camera orientation of 2D view mode camera transform                
                 automapViewMode = AutomapViewMode.View2D; // need to change view mode so that SwitchFocusToGameObject() does the correct thing
                 restoreOldCameraTransformViewFromTop();
-                SwitchFocusToGameObject(gameObjectPlayerAdvanced);
+                SwitchFocusToGameObject(GameManager.Instance.PlayerObject);
                 saveCameraTransformViewFromTop();
 
                 // focus player in 3D view mode - but keep old camera orientation of 3D view mode camera transform
                 automapViewMode = AutomapViewMode.View3D; // need to change view mode so that SwitchFocusToGameObject() does the correct thing
                 restoreOldCameraTransformView3D();
-                SwitchFocusToGameObject(gameObjectPlayerAdvanced);
+                SwitchFocusToGameObject(GameManager.Instance.PlayerObject);
                 saveCameraTransformView3D();
 
                 // restore view mode
@@ -943,8 +943,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
             }
 
-            gameObjectPlayerAdvanced = GameObject.Find("PlayerAdvanced");
-            if (!gameObjectPlayerAdvanced)
+            if (!GameManager.Instance.PlayerObject)
             {
                 DaggerfallUnity.LogMessage("GameObject \"PlayerAdvanced\" not found! in script DaggerfallAutomap (in function Awake())", true);
                 if (Application.isEditor)
@@ -1086,7 +1085,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// </summary>
         private void resetRotationPivotAxisPositionViewFromTop()
         {
-            rotationPivotAxisPositionViewFromTop = gameObjectPlayerAdvanced.transform.position;
+            rotationPivotAxisPositionViewFromTop = GameManager.Instance.PlayerObject.transform.position;
             daggerfallAutomap.RotationPivotAxisPosition = rotationPivotAxisPositionViewFromTop;
         }
 
@@ -1095,7 +1094,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// </summary>
         private void resetRotationPivotAxisPositionView3D()
         {
-            rotationPivotAxisPositionView3D = gameObjectPlayerAdvanced.transform.position;
+            rotationPivotAxisPositionView3D = GameManager.Instance.PlayerObject.transform.position;
             daggerfallAutomap.RotationPivotAxisPosition = rotationPivotAxisPositionView3D;
         }
 
@@ -1145,7 +1144,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     rotationPivotAxisPosition = rotationPivotAxisPositionView3D;
                     break;
                 default:
-                    rotationPivotAxisPosition = gameObjectPlayerAdvanced.transform.position;
+                    rotationPivotAxisPosition = GameManager.Instance.PlayerObject.transform.position;
                     break;
             }
             return (rotationPivotAxisPosition);

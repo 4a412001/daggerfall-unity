@@ -63,7 +63,7 @@ namespace DaggerfallWorkshop.Game
         Quaternion cameraTransformRotationSaved; // camera rotation is saved so that after closing and reopening exterior automap the camera transform settings can be restored
         float cameraOrthographicSizeSaved; // camera's orthographic size is saved so that after closing and reopening exterior automap the camera settings can be restored
 
-        GameObject gameObjectPlayerAdvanced = null; // used to hold reference to instance of GameObject "PlayerAdvanced"
+        //GameObject gameObjectPlayerAdvanced = null; // used to hold reference to instance of GameObject "PlayerAdvanced"
 
         // exterior automap view mode (controls settings for extra buildings and ground flats)
         public enum ExteriorAutomapViewMode
@@ -419,8 +419,7 @@ namespace DaggerfallWorkshop.Game
 
         void Awake()
         {
-            gameObjectPlayerAdvanced = GameObject.Find("PlayerAdvanced");
-            if (!gameObjectPlayerAdvanced)
+            if (!GameManager.Instance.PlayerObject)
             {
                 DaggerfallUnity.LogMessage("GameObject \"PlayerAdvanced\" not found! in script DaggerfallExteriorAutomap (in function Awake())", true);
                 if (Application.isEditor)
@@ -1474,12 +1473,12 @@ namespace DaggerfallWorkshop.Game
             playerPos.x -= refWidth * 0.5f;
             playerPos.z -= refHeight * 0.5f;
             gameobjectPlayerMarkerArrow.transform.position = playerPos;
-            gameobjectPlayerMarkerArrow.transform.rotation = gameObjectPlayerAdvanced.transform.rotation;
+            gameobjectPlayerMarkerArrow.transform.rotation = GameManager.Instance.PlayerObject.transform.rotation;
 
             // place player marker stamp
             Vector3 newPos = gameobjectPlayerMarkerArrow.transform.position;
             newPos.y = -10.0f;
-            Vector3 biasVec = -Vector3.Normalize(gameObjectPlayerAdvanced.transform.forward);
+            Vector3 biasVec = -Vector3.Normalize(GameManager.Instance.PlayerObject.transform.forward);
             gameobjectPlayerMarkerArrowStamp.transform.position = newPos + biasVec * 0.8f;
             gameobjectPlayerMarkerArrowStamp.transform.rotation = gameobjectPlayerMarkerArrow.transform.rotation;
 

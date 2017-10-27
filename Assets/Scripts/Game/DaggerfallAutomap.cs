@@ -454,7 +454,7 @@ namespace DaggerfallWorkshop.Game
 
         void Awake()
         {
-            gameObjectPlayerAdvanced = GameObject.Find("PlayerAdvanced");
+            gameObjectPlayerAdvanced = GameManager.Instance.PlayerObject;
             if (!gameObjectPlayerAdvanced)
             {
                 DaggerfallUnity.LogMessage("GameObject \"PlayerAdvanced\" not found! in script DaggerfallAutomap (in function Awake())", true);
@@ -616,7 +616,7 @@ namespace DaggerfallWorkshop.Game
             float nearestDistance = float.MaxValue;
             foreach (RaycastHit hit in hitsTrueLevelGeometry1)
             {
-                if ((hit.collider.gameObject.name != "PlayerAdvanced") && (hit.distance < nearestDistance))
+                if ((hit.collider.gameObject != GameManager.Instance.PlayerObject) && (hit.distance < nearestDistance))
                 {
                     hitTrueLevelGeometry1 = hit;
                     nearestDistance = hit.distance;
@@ -627,7 +627,7 @@ namespace DaggerfallWorkshop.Game
             nearestDistance = float.MaxValue;
             foreach (RaycastHit hit in hitsTrueLevelGeometry2)
             {
-                if ((hit.collider.gameObject.name != "PlayerAdvanced") && (hit.distance < nearestDistance))
+                if ((hit.collider.gameObject != GameManager.Instance.PlayerObject) && (hit.distance < nearestDistance))
                 {
                     hitTrueLevelGeometry2 = hit;
                     nearestDistance = hit.distance;
@@ -638,7 +638,7 @@ namespace DaggerfallWorkshop.Game
             nearestDistance = float.MaxValue;
             foreach (RaycastHit hit in hitsTrueLevelGeometry3)
             {
-                if ((hit.collider.gameObject.name != "PlayerAdvanced") && (hit.distance < nearestDistance))
+                if ((hit.collider.gameObject != GameManager.Instance.PlayerObject) && (hit.distance < nearestDistance))
                 {
                     hitTrueLevelGeometry3 = hit;
                     nearestDistance = hit.distance;
