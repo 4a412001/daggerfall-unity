@@ -35,16 +35,16 @@ namespace DaggerfallWorkshop.Game
         public float runSpeedOverride = 11.0f;
         public bool useRunSpeedOverride = false;
 
-        public float standingHeight = 1.78f;
-        public float eyeHeight = 0.09f;         // Eye height is 9cm below top of capsule.
-        public float crouchingHeight = 0.45f;
+        //public float standingHeight = 1.78f;
+        //public float eyeHeight = 0.09f;         // Eye height is 9cm below top of capsule.
+        //public float crouchingHeight = 0.45f;
         public float crouchingJumpDelta = 0.8f;
         bool isCrouching = false;
-        bool wasCrouching = false;
+        //bool wasCrouching = false;
 
         // TODO: Placeholder integration of horse & cart riding - using same speed for cart to simplify PlayerMotor integration
         // and avoid adding any references to TransportManager.
-        public float ridingHeight = 2.6f;   // Height of a horse plus seated rider. (1.6m + 1m)
+        //public float ridingHeight = 2.6f;   // Height of a horse plus seated rider. (1.6m + 1m)
         bool isRiding = false;
         private bool riding = false;
 
@@ -88,7 +88,7 @@ namespace DaggerfallWorkshop.Game
         public CharacterController controller;
 
         private Camera mainCamera;
-        private float defaultCameraHeight;
+        //private float defaultCameraHeight;
 
         private Vector3 moveDirection = Vector3.zero;
         private bool grounded = false;
@@ -268,8 +268,8 @@ namespace DaggerfallWorkshop.Game
 
                 if (!riding)
                 {
-                    if (!isCrouching)                    
-                        controller.height = standingHeight;
+                    //if (!isCrouching)                    
+                    //    controller.height = standingHeight;
 
                     try
                     {
@@ -343,12 +343,35 @@ namespace DaggerfallWorkshop.Game
             // Apply gravity
             moveDirection.y -= gravity * Time.deltaTime;
 
-            // If we hit something above us AND we are moving up, reverse vertical movement
-            if ((controller.collisionFlags & CollisionFlags.Above) != 0)
+            // Check height of world above eye point
+            const float cameraHeight = 1.5f;
+            Vector3 cameraPos = mainCamera.transform.position;
+            Ray ray = new Ray(transform.position, Vector3.up);
+            RaycastHit rayHit;
+            bool hitHead = Physics.Raycast(ray, out rayHit, cameraHeight);
+            if (hitHead)
             {
                 if (moveDirection.y > 0)
+                {
+                    // Ceiling check - if we hit something above AND we are moving up, reverse vertical movement
                     moveDirection.y = -moveDirection.y;
+                }
+                else
+                {
+                    // Move down camera so head does not poke through ceiling
+                    //cameraPos.y = rayHit.distance;                    
+                }
             }
+
+            // Assign camera height
+            //mainCamera.transform.position = cameraPos;
+
+            //// Ceiling check - if we hit something above us AND we are moving up, reverse vertical movement
+            //if ((controller.collisionFlags & CollisionFlags.Above) != 0)
+            //{
+            //    if (moveDirection.y > 0)
+            //        moveDirection.y = -moveDirection.y;
+            //}
 
             // Moving platform support
             if (activePlatform != null)
@@ -448,67 +471,67 @@ namespace DaggerfallWorkshop.Game
             if (fakeLevitate && fakeLevitate.IsLevitating)
                 return;
 
-            if (isRiding && !riding)
-            {
-                Vector3 pos = mainCamera.transform.localPosition;
-                pos.y = (ridingHeight / 2) - eyeHeight;
-                mainCamera.transform.localPosition = pos;
-                controller.height = ridingHeight;
-                pos = controller.transform.position;
-                float prevHeight = isCrouching ? crouchingHeight : standingHeight;
-                pos.y += (ridingHeight - prevHeight) / 2.0f;
-                controller.transform.position = pos;
-                riding = true;
-            }
-            else if (!isRiding && riding)
-            {
-                Vector3 pos = mainCamera.transform.localPosition;
-                pos.y = (standingHeight / 2) - eyeHeight;
-                mainCamera.transform.localPosition = pos;
-                controller.height = standingHeight;
-                pos = controller.transform.position;
-                pos.y -= (ridingHeight - standingHeight) / 2.0f;
-                controller.transform.position = pos;
-                riding = false;
-            }
-            else if (!isRiding)
-            {
-                try
-                {
-                    // If the run button is set to toggle, then switch between walk/run speed. (We use Update for this...
-                    // FixedUpdate is a poor place to use GetButtonDown, since it doesn't necessarily run every frame and can miss the event)
-                    if (toggleRun && grounded && InputManager.Instance.HasAction(InputManager.Actions.Run))
-                        speed = (speed == GetBaseSpeed() ? GetRunSpeed(speed) : GetBaseSpeed());
-                    //if (toggleRun && grounded && Input.GetButtonDown("Run"))
-                    //    speed = (speed == walkSpeed ? runSpeed : walkSpeed);
-                }
-                catch
-                {
-                    speed = GetRunSpeed(speed);
-                }
+            //if (isRiding && !riding)
+            //{
+            //    Vector3 pos = mainCamera.transform.localPosition;
+            //    pos.y = (ridingHeight / 2) - eyeHeight;
+            //    mainCamera.transform.localPosition = pos;
+            //    controller.height = ridingHeight;
+            //    pos = controller.transform.position;
+            //    float prevHeight = isCrouching ? crouchingHeight : standingHeight;
+            //    pos.y += (ridingHeight - prevHeight) / 2.0f;
+            //    controller.transform.position = pos;
+            //    riding = true;
+            //}
+            //else if (!isRiding && riding)
+            //{
+            //    Vector3 pos = mainCamera.transform.localPosition;
+            //    pos.y = (standingHeight / 2) - eyeHeight;
+            //    mainCamera.transform.localPosition = pos;
+            //    controller.height = standingHeight;
+            //    pos = controller.transform.position;
+            //    pos.y -= (ridingHeight - standingHeight) / 2.0f;
+            //    controller.transform.position = pos;
+            //    riding = false;
+            //}
+            //else if (!isRiding)
+            //{
+            //    try
+            //    {
+            //        // If the run button is set to toggle, then switch between walk/run speed. (We use Update for this...
+            //        // FixedUpdate is a poor place to use GetButtonDown, since it doesn't necessarily run every frame and can miss the event)
+            //        if (toggleRun && grounded && InputManager.Instance.HasAction(InputManager.Actions.Run))
+            //            speed = (speed == GetBaseSpeed() ? GetRunSpeed(speed) : GetBaseSpeed());
+            //        //if (toggleRun && grounded && Input.GetButtonDown("Run"))
+            //        //    speed = (speed == walkSpeed ? runSpeed : walkSpeed);
+            //    }
+            //    catch
+            //    {
+            //        speed = GetRunSpeed(speed);
+            //    }
 
-                // Toggle crouching
-                if (InputManager.Instance.ActionComplete(InputManager.Actions.Crouch))
-                    isCrouching = !isCrouching;
+            //    // Toggle crouching
+            //    if (InputManager.Instance.ActionComplete(InputManager.Actions.Crouch))
+            //        isCrouching = !isCrouching;
 
-                // Manage crouching height
-                if (isCrouching && !wasCrouching)
-                {
-                    controller.height = crouchingHeight;
-                    Vector3 pos = controller.transform.position;
-                    pos.y -= (standingHeight - crouchingHeight) / 2.0f;
-                    controller.transform.position = pos;
-                    wasCrouching = isCrouching;
-                }
-                else if (!isCrouching && wasCrouching)
-                {
-                    controller.height = standingHeight;
-                    Vector3 pos = controller.transform.position;
-                    pos.y += (standingHeight - crouchingHeight) / 2.0f;
-                    controller.transform.position = pos;
-                    wasCrouching = isCrouching;
-                }
-            }
+            //    // Manage crouching height
+            //    if (isCrouching && !wasCrouching)
+            //    {
+            //        controller.height = crouchingHeight;
+            //        Vector3 pos = controller.transform.position;
+            //        pos.y -= (standingHeight - crouchingHeight) / 2.0f;
+            //        controller.transform.position = pos;
+            //        wasCrouching = isCrouching;
+            //    }
+            //    else if (!isCrouching && wasCrouching)
+            //    {
+            //        controller.height = standingHeight;
+            //        Vector3 pos = controller.transform.position;
+            //        pos.y += (standingHeight - crouchingHeight) / 2.0f;
+            //        controller.transform.position = pos;
+            //        wasCrouching = isCrouching;
+            //    }
+            //}
 
             if (smoothFollower != null)
             {
