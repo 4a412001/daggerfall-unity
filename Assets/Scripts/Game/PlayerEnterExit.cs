@@ -50,6 +50,7 @@ namespace DaggerfallWorkshop.Game
 
         int lastPlayerDungeonBlockIndex = -1;
         DFLocation.DungeonBlock playerDungeonBlockData = new DFLocation.DungeonBlock();
+        public short blockWaterLevel = 10000;
 
         DFLocation.BuildingTypes buildingType;
         ushort factionID = 0;
@@ -201,7 +202,8 @@ namespace DaggerfallWorkshop.Game
                 {
                     dungeon.GetBlockData(playerBlockIndex, out playerDungeonBlockData);
                     lastPlayerDungeonBlockIndex = playerBlockIndex;
-                    CastleCheck();
+                    blockWaterLevel = playerDungeonBlockData.WaterLevel;
+                    isPlayerInsideDungeonCastle = playerDungeonBlockData.CastleBlock;
                     SpecialAreaCheck();
                     //Debug.Log(string.Format("Player is now inside block {0}", playerDungeonBlockData.BlockName));
                 }
@@ -276,6 +278,7 @@ namespace DaggerfallWorkshop.Game
             isPlayerInside = false;
             isPlayerInsideDungeon = false;
             isPlayerInsideDungeonCastle = false;
+            blockWaterLevel = 10000;
 
             // Set player GPS coordinates
             playerGPS.WorldX = worldX;
@@ -764,31 +767,6 @@ namespace DaggerfallWorkshop.Game
 
         #region Private Methods
 
-        // Check if current block is a castle block
-        private void CastleCheck()
-        {
-            if (!isPlayerInsideDungeon)
-            {
-                isPlayerInsideDungeonCastle = false;
-                return;
-            }
-
-            switch (playerDungeonBlockData.BlockName)
-            {
-                case "S0000040.RDB":    // Sentinel castle area
-                case "S0000041.RDB":
-                case "S0000042.RDB":
-                case "S0000080.RDB":    // Wayrest castle area
-                case "S0000081.RDB":
-                case "S0000160.RDB":    // Daggerfall castle area
-                    isPlayerInsideDungeonCastle = true;
-                    break;
-                default:
-                    isPlayerInsideDungeonCastle = false;
-                    break;
-            }
-        }
-
         private void SpecialAreaCheck()
         {
             if (!isPlayerInsideDungeon)
@@ -920,12 +898,13 @@ namespace DaggerfallWorkshop.Game
 
             if (playerGPS && !isPlayerInside)
             {
-                if (location.HasDungeon &&
-                    location.MapTableData.DungeonType != DFRegion.DungeonTypes.NoDungeon &&
-                    location.MapTableData.DungeonType != DFRegion.DungeonTypes.Palace)
+                if (location.MapTableData.LocationType == DFRegion.LocationTypes.DungeonLabyrinth ||
+                    location.MapTableData.LocationType == DFRegion.LocationTypes.DungeonKeep ||
+                    location.MapTableData.LocationType == DFRegion.LocationTypes.DungeonRuin ||
+                    location.MapTableData.LocationType == DFRegion.LocationTypes.Graveyard)
                 {
                     // Get text ID based on set start and dungeon type index
-                    int dungeonTypeIndex = (int)location.MapTableData.DungeonType >> 8;
+                    int dungeonTypeIndex = (int)location.MapTableData.DungeonType;
                     int set1ID = set1StartID + dungeonTypeIndex;
                     int set2ID = set2StartID + dungeonTypeIndex;
 
@@ -937,7 +916,8 @@ namespace DaggerfallWorkshop.Game
                     DaggerfallUI.AddHUDText(flavourText1, 3);
                     DaggerfallUI.AddHUDText(flavourText2, 3);
                 }
-                else
+                else if (location.MapTableData.LocationType != DFRegion.LocationTypes.Coven &&
+                    location.MapTableData.LocationType != DFRegion.LocationTypes.HomeYourShips)
                 {
                     // Show "You are entering %s"
                     string youAreEntering = HardStrings.youAreEntering;
